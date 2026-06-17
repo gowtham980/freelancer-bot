@@ -210,7 +210,7 @@ freelancer_bot/
 ├── design.py        # Website design contest discovery (10 categories)
 ├── config.py        # YAML config management
 ├── analytics.py     # Tracking and reporting
-├── grok.py          # LLM client (Ollama + OpenAI-compatible APIs)
+├── llm.py          # LLM client (Ollama + OpenAI-compatible APIs)
 └── cli.py           # Typer CLI with all subcommands
 ```
 

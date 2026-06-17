@@ -1,7 +1,7 @@
 """Tech contest discovery + implementation — 18 search categories, AI-powered analysis.
 
 Enhanced with:
-- AI contest feasibility analysis via Grok/LLM
+- AI contest feasibility analysis via LLM
 - Auto-implementation with code generation
 - NLP-aware design filtering (design+tech = tech contest)
 - Contest quality scoring (description detail, prize-to-scope ratio)
@@ -25,11 +25,11 @@ from rich.table import Table
 
 from freelancer_bot.api import APIClient
 from freelancer_bot.email import EmailSender
-from freelancer_bot.grok import (
+from freelancer_bot.llm import (
     ContestFeasibility,
     DesignTechClassification,
-    GrokClient,
-    GrokError,
+    LLMClient,
+    LLMError,
     ImplementationResult,
 )
 from freelancer_bot.proposals import generate_contest_proposal
@@ -105,7 +105,7 @@ class ContestsEngine:
     dry_run: bool = False
     # ── New fields ──────────────────────────────────────────────────
     implement: bool = False  # --implement flag: actually generate code
-    grok: GrokClient | None = None  # LLM client for AI analysis
+    llm: LLMClient | None = None  # LLM client for AI analysis
     use_ai_analysis: bool = True  # Enable AI-powered feasibility analysis
 
     async def run(self) -> dict[str, Any]:
@@ -123,9 +123,9 @@ class ContestsEngine:
             border_style="blue",
         ))
 
-        # Initialize Grok client if AI analysis is enabled
-        if self.use_ai_analysis and self.grok is None:
-            self.grok = GrokClient.from_config()
+        # Initialize LLM client if AI analysis is enabled
+        if self.use_ai_analysis and self.llm is None:
+            self.llm = LLMClient.from_config()
 
         # Phase 1: Parallel search
         all_contests = await self._search_all()
@@ -312,7 +312,7 @@ class ContestsEngine:
 
         Filters out contests that AI determines are not feasible.
         """
-        if not self.grok:
+        if not self.llm:
             return candidates
 
         console.print(f"\n[bold]🤖 AI Feasibility Analysis (top {min(len(candidates), 15)})...[/bold]")
@@ -352,7 +352,7 @@ class ContestsEngine:
                         # Use the search result as-is
 
                     # Run AI feasibility analysis
-                    feasibility = await self.grok.analyze_contest_feasibility(full_contest)
+                    feasibility = await self.llm.analyze_contest_feasibility(full_contest)
 
                     # Store analysis results
                     full_contest["_feasibility"] = feasibility.to_dict()
@@ -383,7 +383,7 @@ class ContestsEngine:
                     )
                     analyzed.append(full_contest)
 
-                except GrokError as e:
+                except LLMError as e:
                     logger.error("feasibility_analysis_error", contest_id=cid, error=str(e)[:200])
                     console.print(f"  [red]✗[/red] AI error for [bold]{title}[/bold] — keeping in candidates")
                     skipped_ai_error += 1
@@ -501,7 +501,7 @@ class ContestsEngine:
                 (impl_dir / "contest_info.json").write_text(json.dumps(contest_info, indent=2))
 
                 # ── Code generation (NEW: --implement flag) ──────────
-                if self.implement and self.grok:
+                if self.implement and self.llm:
                     console.print(f"  [bold cyan]🤖[/bold cyan] Generating code for [bold]{title}[/bold]...")
 
                     try:
@@ -537,7 +537,7 @@ class ContestsEngine:
                                 risks=[],
                             )
 
-                        impl_result = await self.grok.generate_implementation(contest, fe_obj)
+                        impl_result = await self.llm.generate_implementation(contest, fe_obj)
 
                         # Save generated files
                         code_dir = impl_dir / "code"
@@ -579,7 +579,7 @@ class ContestsEngine:
                             f"{len(impl_result.files)} files → {code_dir}"
                         )
 
-                    except GrokError as e:
+                    except LLMError as e:
                         logger.error("code_generation_error", contest_id=cid, error=str(e)[:200])
                         console.print(f"  [red]✗[/red] Code gen failed for [bold]{title}[/bold]: {str(e)[:100]}")
                         # Still save the contest info even if code gen fails

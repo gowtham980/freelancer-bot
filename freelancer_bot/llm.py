@@ -1,4 +1,4 @@
-"""Grok/LLM integration for AI-powered contest analysis and code generation.
+"""LLM integration for AI-powered contest analysis and code generation.
 
 Uses Ollama (local) or OpenAI-compatible API for:
 - Contest feasibility analysis (can AI implement this? is it worth it?)
@@ -33,7 +33,7 @@ DEFAULT_LLM_CONFIG: dict[str, Any] = {
 
 
 @dataclass
-class GrokClient:
+class LLMClient:
     """LLM client for contest analysis and code generation.
 
     Supports Ollama (local) and OpenAI-compatible APIs.
@@ -48,7 +48,7 @@ class GrokClient:
     timeout: float = 120.0
 
     @classmethod
-    def from_config(cls, config: dict[str, Any] | None = None) -> "GrokClient":
+    def from_config(cls, config: dict[str, Any] | None = None) -> "LLMClient":
         """Create client from config dict or env vars."""
         if config is None:
             config = {}
@@ -94,7 +94,7 @@ class GrokClient:
                 return data.get("message", {}).get("content", "")
             except httpx.HTTPError as e:
                 logger.error("ollama_chat_error", error=str(e)[:300])
-                raise GrokError(f"Ollama chat failed: {e}") from e
+                raise LLMError(f"Ollama chat failed: {e}") from e
 
     async def _chat_openai(self, messages: list[dict[str, str]]) -> str:
         """Send chat request to OpenAI-compatible API."""
@@ -120,7 +120,7 @@ class GrokClient:
                 return data.get("choices", [{}])[0].get("message", {}).get("content", "")
             except httpx.HTTPError as e:
                 logger.error("openai_chat_error", error=str(e)[:300])
-                raise GrokError(f"OpenAI chat failed: {e}") from e
+                raise LLMError(f"OpenAI chat failed: {e}") from e
 
     async def analyze_contest_feasibility(
         self, contest: dict[str, Any]
@@ -205,8 +205,8 @@ Respond ONLY with valid JSON, no markdown or explanation."""
             logger.error("feasibility_parse_error", error=str(e)[:200], title=title)
             # Fallback to keyword-based analysis
             return self._fallback_feasibility(contest)
-        except GrokError as e:
-            logger.error("feasibility_grok_error", error=str(e)[:200], title=title)
+        except LLMError as e:
+            logger.error("feasibility_llm_error", error=str(e)[:200], title=title)
             return self._fallback_feasibility(contest)
 
     def _fallback_feasibility(self, contest: dict[str, Any]) -> ContestFeasibility:
@@ -405,8 +405,8 @@ Respond ONLY with valid JSON, no markdown wrapping or explanation."""
 
         except (json.JSONDecodeError, KeyError) as e:
             logger.error("implementation_parse_error", error=str(e)[:200], title=title)
-            raise GrokError(f"Failed to parse implementation response: {e}") from e
-        except GrokError:
+            raise LLMError(f"Failed to parse implementation response: {e}") from e
+        except LLMError:
             raise
 
     async def classify_design_vs_tech(
@@ -467,8 +467,8 @@ Respond ONLY with valid JSON."""
         except (json.JSONDecodeError, KeyError) as e:
             logger.error("classify_parse_error", error=str(e)[:200], title=title)
             return self._fallback_classify(contest)
-        except GrokError as e:
-            logger.error("classify_grok_error", error=str(e)[:200], title=title)
+        except LLMError as e:
+            logger.error("classify_llm_error", error=str(e)[:200], title=title)
             return self._fallback_classify(contest)
 
     def _fallback_classify(self, contest: dict[str, Any]) -> DesignTechClassification:
@@ -617,5 +617,5 @@ class DesignTechClassification:
         }
 
 
-class GrokError(Exception):
-    """Error from Grok/LLM operations."""
+class LLMError(Exception):
+    """Error from LLM operations."""

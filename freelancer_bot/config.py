@@ -1,4 +1,4 @@
-"""YAML config management for Freelancer Bot v2 — with LLM/Grok config.
+"""YAML config management for Freelancer Bot v2 — with LLM/LLM config.
 
 Config file: ~/.config/freelancer-bot/config.yaml
 All secrets from environment variables (never hardcoded).
