@@ -29,16 +29,16 @@ class EmailConfig:
         default_factory=lambda: int(os.environ.get("EMAIL_SMTP_PORT", "587"))
     )
     username: str = field(
-        default_factory=lambda: os.environ.get("EMAIL_USERNAME", "gowtham9804938@gmail.com")
+        default_factory=lambda: os.environ.get("EMAIL_USERNAME", "your_email@gmail.com")
     )
     password: str = field(
         default_factory=lambda: os.environ.get("EMAIL_PASSWORD", "")
     )
     from_addr: str = field(
-        default_factory=lambda: os.environ.get("EMAIL_FROM", "gowtham9804938@gmail.com")
+        default_factory=lambda: os.environ.get("EMAIL_FROM", "your_email@gmail.com")
     )
     to_addr: str = field(
-        default_factory=lambda: os.environ.get("EMAIL_TO", "gowthamkrishnateja@gmail.com")
+        default_factory=lambda: os.environ.get("EMAIL_TO", "your_email@gmail.com")
     )
     use_tls: bool = True
 

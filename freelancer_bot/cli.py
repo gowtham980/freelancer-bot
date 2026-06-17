@@ -120,8 +120,8 @@ def get_email(config: ConfigManager | None = None) -> EmailSender:
     """Get email sender from config/env."""
     if config is None:
         config = get_config()
-    from_addr = config.get("email", "from") or os.environ.get("EMAIL_FROM", "gowtham9804938@gmail.com")
-    to_addr = config.get("email", "to") or os.environ.get("EMAIL_TO", "gowthamkrishnateja@gmail.com")
+    from_addr = config.get("email", "from") or os.environ.get("EMAIL_FROM", "your_email@gmail.com")
+    to_addr = config.get("email", "to") or os.environ.get("EMAIL_TO", "your_email@gmail.com")
     password = config.get("email", "password") or os.environ.get("EMAIL_PASSWORD", "")
     smtp_host = config.get("email", "smtp_host") or os.environ.get("EMAIL_SMTP_HOST", "smtp.gmail.com")
     smtp_port = config.get("email", "smtp_port") or int(os.environ.get("EMAIL_SMTP_PORT", "587"))

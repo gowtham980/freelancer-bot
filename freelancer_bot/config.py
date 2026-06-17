@@ -25,11 +25,11 @@ DEFAULT_CONFIG_PATH = DEFAULT_CONFIG_DIR / "config.yaml"
 DEFAULT_CONFIG: dict[str, Any] = {
     "freelancer": {
         "token": "${FREELANCER_OAUTH_TOKEN}",
-        "user_id": 32666915,
+        "user_id": 0  # Set your Freelancer user ID,
     },
     "email": {
-        "from": "gowtham9804938@gmail.com",
-        "to": "gowthamkrishnateja@gmail.com",
+        "from": "your_email@gmail.com",
+        "to": "your_email@gmail.com",
         "password": "${EMAIL_PASSWORD}",
         "smtp_host": "smtp.gmail.com",
         "smtp_port": 587,
