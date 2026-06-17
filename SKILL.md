@@ -4,8 +4,8 @@ version: "2.0.0"
 description: "Automate Freelancer.com — smart project bidding with AI pre-bid analysis, tech contest discovery with auto-implementation, and website design contest tracking. Scores projects by AI/agentic keyword weight, detects red flags, generates tailored proposals."
 argument-hint: 'freelancer-bot bid 3 | freelancer-bot contests 5 | freelancer-bot design 10 | freelancer-bot status'
 allowed-tools: Bash, Read, Write, AskUserQuestion
-homepage: https://github.com/gowthamkrishnateja/freelancer-bot
-repository: https://github.com/gowthamkrishnateja/freelancer-bot
+homepage: https://github.com/gowtham980/freelancer-bot
+repository: https://github.com/gowtham980/freelancer-bot
 author: gowthamkrishnateja
 license: MIT
 user-invocable: true
